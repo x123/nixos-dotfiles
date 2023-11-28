@@ -6,21 +6,28 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [# Include the results of the hardware scan.
       ./hardware-configuration.nix
-      <home-manager/nixos>
-      <sops-nix/modules/sops>
     ];
 
   # make ready for nix flakes
-  #nix.package = pkgs.nixFlakes;
-  #nix.extraOptions = ''
-  #  experimental-features = nix-command flakes
-  #'';
+  nix.package = pkgs.nixFlakes;
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+  '';
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    systemd-boot.enable = true;
+    systemd-boot.configurationLimit = 100;
+    efi.canTouchEfiVariables = true;
+  };
+
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" ];
+  boot.kernelPackages = pkgs.linuxPackages_zen;
+  boot.kernelModules = [ "it87" "k10temp" "nct6683" ];
+
+  services.fstrim.enable = true;
 
   networking.hostName = "xnix"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -50,10 +57,24 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  hardware.bluetooth = {
+    enable = true;
+    hsphfpd.enable = false;
+    settings = {
+      General = {
+        ControllerMode = "bredr";
+        Enable = "Source,Sink,Media,Socket";
+      };
+    };
+  };
+
   hardware.opengl = {
     enable = true;
     driSupport = true;
     driSupport32Bit = true;
+    extraPackages = with pkgs; [
+      vaapiVdpau
+    ];
   };
 
   # Enable the X11 windowing system.
@@ -116,25 +137,8 @@
     #];
   };
 
-  home-manager.users.x = { pkgs, ... }: {
-    programs.bash.enable = true;
-    home.packages = with pkgs; [
-      firefox
-      git
-      home-manager
-    ];
-    home.stateVersion = "23.05";
-  };
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-
-  # nur package repo
-#  nixpkgs.config.packageOverrides = pkgs: {
-#    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-#      inherit pkgs;
-#    };
-#  };
 
 # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -174,5 +178,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.05"; # Did you read the comment?
-
 }

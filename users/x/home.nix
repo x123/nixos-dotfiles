@@ -6,22 +6,22 @@
   home.username = "x";
   home.homeDirectory = "/home/x";
   home.sessionVariables = {
-    EDITOR = "vim";
+    #EDITOR = "vim";
   };
 
-  imports = [
-    <sops-nix/modules/home-manager/sops.nix>
+  imports = [];
+
+  nixpkgs.overlays = [(
+    self: super: {
+      discord = super.discord.overrideAttrs (
+        _: { src = builtins.fetchTarball {
+          url = "https://discord.com/api/download?platform=linux&format=tar.gz";
+          sha256 = "1xjk77g9lj5b78c1w3fj42by9b483pkbfb41yzxrg4p36mnd2hkn";
+        }; }
+      );
+    }
+    )
   ];
-
-  sops = {
-    age.keyFile = "/home/x/.config/sops/age/keys.txt";
-    defaultSopsFile = /home/x/.config/sops/secrets/secrets.yaml;
-    secrets = {
-      xbox = {};
-      github-email = {};
-    };
-
-  };
 
   nixpkgs = {
     config = {
@@ -30,43 +30,65 @@
   };
 
   home.packages = with pkgs; [
+    # term/shell
     alacritty
+    file
+    htop
+    pciutils
+    ripgrep
+    tmux
+    usbutils
+    whois
+
+    # net
+    aria2
+    persepolis
+    discord
     dropbox
     firefox
+
+    # offixe
+    libreoffice
+
+    # audio/video
+    pavucontrol
+    streamlink
+    vlc
+
+    # art
+    gimp
+
+    # dev
     git
     git-crypt
-    htop
-    gimp
+    rocgdb # for strings
 
     # crypto
     age
     gnupg
-    sops
     keepassxc
+    sops
 
-    # archivs
-    zip
+    # archives
     unzip
+    zip
 
     # network tools
-    mtr
     dnsutils
-    nmap
+    ethtool
     ipcalc
+    mtr
+    nmap
 
     # misc
-    ripgrep
-    file
-    tmux
     pinentry
+    xygrib
 
     # system tools
-    sysstat
     lm_sensors
-    ethtool
-    pciutils
-    usbutils
+    sysstat
   ];
+
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
   # when a new Home Manager release introduces backwards
@@ -80,6 +102,93 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
+  programs.firefox = {
+    enable = true;
+    profiles."x" = {
+      extensions = with config.nur.repos.rycee.firefox-addons; [
+        aria2-integration
+        clearurls
+        darkreader
+        decentraleyes
+        keepassxc-browser
+        libredirect
+        no-pdf-download
+        noscript
+        plasma-integration
+        privacy-badger
+        ublock-origin
+      ];
+
+      settings = {
+	# Performance settings
+	"gfx.webrender.all" = true; # Force enable GPU acceleration
+	"media.ffmpeg.vaapi.enabled" = true;
+	"widget.dmabuf.force-enabled" = true; # Required in recent Firefoxes
+
+	# Keep the reader button enabled at all times; really don't
+	# care if it doesn't work 20% of the time, most websites are
+	# crap and unreadable without this
+	"reader.parse-on-load.force-enabled" = true;
+
+	# Hide the "sharing indicator", it's especially annoying
+	# with tiling WMs on wayland
+	"privacy.webrtc.legacyGlobalIndicator" = false;
+
+        # never ask to remember passwords
+        "signon.rememberSignons" = false;
+
+	# Actual settings
+	"app.shield.optoutstudies.enabled" = false;
+	"app.update.auto" = false;
+	"browser.bookmarks.restore_default_bookmarks" = false;
+	"browser.contentblocking.category" = "strict";
+	"browser.ctrlTab.recentlyUsedOrder" = false;
+	"browser.discovery.enabled" = false;
+	"browser.laterrun.enabled" = false;
+	"browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons" =
+	  false;
+	"browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features" =
+	  false;
+	"browser.newtabpage.activity-stream.feeds.snippets" = false;
+	"browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.havePinned" = "";
+	"browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.searchEngines" = "";
+	"browser.newtabpage.activity-stream.section.highlights.includePocket" =
+	  false;
+	"browser.newtabpage.activity-stream.showSponsored" = false;
+	"browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+	"browser.newtabpage.pinned" = false;
+	"browser.protections_panel.infoMessage.seen" = true;
+	"browser.quitShortcut.disabled" = true;
+	"browser.shell.checkDefaultBrowser" = false;
+	"browser.ssb.enabled" = true;
+	"browser.toolbars.bookmarks.visibility" = "always";
+	"browser.urlbar.placeholderName" = "DuckDuckGo";
+	"browser.urlbar.suggest.openpage" = false;
+	"datareporting.policy.dataSubmissionEnable" = false;
+	"datareporting.policy.dataSubmissionPolicyAcceptedVersion" = 2;
+	"dom.security.https_only_mode" = true;
+	"dom.security.https_only_mode_ever_enabled" = true;
+	"extensions.getAddons.showPane" = false;
+	"extensions.htmlaboutaddons.recommendations.enabled" = false;
+	"extensions.pocket.enabled" = false;
+	"identity.fxaccounts.enabled" = false;
+	"privacy.trackingprotection.enabled" = true;
+	"privacy.trackingprotection.socialtracking.enabled" = true;
+      };
+    };
+  };
+
+  programs.yt-dlp = {
+    enable = true;
+    settings = {
+      embed-thumbnail = true;
+      embed-subs = true;
+      sub-langs = "all";
+      downloader = "aria2c";
+      downloader-args = "aria2c:'-c -x8 -s8 -k1M'";
+    };
+  };
+
   programs.git = {
     enable = true;
     userName = "x123";
@@ -88,6 +197,21 @@
 
   programs.vim = {
     enable = true;
+    defaultEditor = true;
+    settings = {
+      number = true;
+      relativenumber = true;
+      tabstop = 4;
+      shiftwidth = 4;
+      expandtab = true;
+      background = "dark";
+    };
+    extraConfig = ''
+      syntax on
+      filetype plugin indent on
+      set cursorline
+      set showmatch
+    '';
   };
 
   programs.ssh = {
@@ -96,6 +220,12 @@
     forwardAgent = false;
 
     matchBlocks = {
+      "*" = {
+        serverAliveInterval = 60;
+        extraOptions = {
+          ConnectTimeout = "10";
+        };
+      };
       "adamantium" = {
         hostname = "adamantium.boxchop.city";
         user = "root";
