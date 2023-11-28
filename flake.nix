@@ -6,9 +6,10 @@
     home-manager.url = "github:nix-community/home-manager/release-23.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nur.url = "github:nix-community/NUR";
+    nixos-wsl.url = "github:nix-community/NixOS-WSL";
   };
   
-  outputs = { nixpkgs, home-manager, nur, ... }:
+  outputs = { nixpkgs, home-manager, nur, nixos-wsl, ... }:
   let 
     system = "x86_64-linux";
     
@@ -21,10 +22,15 @@
 
   in {
     homeManagerConfigurations = {
+      nixos = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+      modules = [
+        ./users/nixos.nix
+      ];
+    };
+
       x = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        #pkgs = nixpkgs.legacyPackages.${system};
-
         modules = [
           nur.nixosModules.nur
           ./users/x/home.nix
@@ -40,22 +46,23 @@
     };
     
     nixosConfigurations = {
+      xnixwsl = lib.nixosSystem {
+        inherit system;
+
+        modules = [
+	      nixos-wsl.nixosModules.wsl
+          ./system/xnixwsl/configuration.nix
+        ];
+      };
+
       xnix = lib.nixosSystem {
         inherit system;
 
         modules = [
           ./system/configuration.nix
-          #home-manager.nixosModules.home-manager
-          #{
-          #  home-manager.useGlobalPkgs = true;
-          #  home-manager.useUserPackages = true;
-          #  home-manager.users.x = import ./users/x/home.nix;
-          #
-          #  # Optionally, use home-manager.extraSpecialArgs to pass
-          #  # arguments to home.nix
-          #}
-        ];  
-      };      
+        ];
+      };
     };
+
   };
 }
