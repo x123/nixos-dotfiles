@@ -6,31 +6,30 @@
 
 {
   imports = [
-    ./hardware-configuration.nix
     ../../modules/system/bluetooth.nix
     ../../modules/system/nvidia.nix
     ../../modules/system/sound.nix
-    ../../modules/system/x11.nix
+    #../../modules/system/x11.nix
     ];
 
-  # support nix flakes
   nix.package = pkgs.nixFlakes;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # bootloader
-  boot.loader = {
-    systemd-boot.enable = true;
-    systemd-boot.configurationLimit = 100;
-    efi.canTouchEfiVariables = true;
+  # Enable the X11 windowing system.
+  services.xserver.enable = true;
+
+  # Enable the KDE Plasma Desktop Environment.
+  services.xserver.displayManager.sddm.enable = true;
+  services.xserver.desktopManager.xfce.enable = true;
+
+  # Configure keymap in X11
+  services.xserver = {
+    layout = "us";
+    xkbVariant = "";
   };
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" ];
-  boot.kernelPackages = pkgs.linuxPackages_zen;
-  boot.kernelModules = [ "it87" "k10temp" "nct6683" ];
-
-  services.fstrim.enable = true;
-
-  networking.hostName = "xnix";
+  networking.hostName = "xnixvm"; # Define your hostname.
+  #networking.nameservers = [ "1.1.1.1" ];
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -47,17 +46,22 @@
     LC_MEASUREMENT = "en_US.UTF-8";
     LC_MONETARY = "en_US.UTF-8";
     LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
     LC_PAPER = "en_US.UTF-8";
     LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
   };
+
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.x = {
     isNormalUser = true;
     description = "x";
     extraGroups = [ "networkmanager" "wheel" ];
+    initialPassword = "resetme";
+    #packages = with pkgs; [
+    #  firefox
+    #  kate
+    #  thunderbird
+    #];
   };
 
   # Allow unfree packages
@@ -73,13 +77,11 @@
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
+  #programs.gnupg.agent = {
+  #  enable = true;
+  #  enableSSHSupport = true;
+  #};
 
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
-  };
-  # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
