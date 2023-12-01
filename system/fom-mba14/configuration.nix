@@ -7,6 +7,7 @@
 {
   imports = [
   ../../modules/system/darwin/karabiner.nix
+  ../../modules/system/nix-settings.nix # do not remove
   ../../modules/system/darwin/yabai.nix
   ../../modules/system/darwin/skhd.nix
   ];
@@ -21,22 +22,22 @@
     bash
     zsh
   ];
-  users.users.fom.shell = pkgs.bash;
 
   environment.variables = {
     EDITOR = "vim";
   };
-  #environment.pathsToLink = [ "/share/bash-completion" ];
 
-  # Necessary for using flakes on this system.
-  nix.settings.experimental-features = "nix-command flakes";
+  # users
+  users.users.fom.shell = pkgs.bash;
+
+  # nix settings
   nix.settings.extra-platforms = "x86_64-darwin";
-
-  services.nix-daemon.enable = true;
   nix.settings.allowed-users = [
     "@admin"
     "fom"
   ];
+
+  services.nix-daemon.enable = true;
 
   # Create /etc/zshrc that loads the nix-darwin environment.
   programs.zsh = {
@@ -47,19 +48,6 @@
   programs.bash = {
     enable = true;
     enableCompletion = true;
-  };
-
-  system.defaults = {
-	dock = {
-	  autohide = true;
-	  #orientation = "right";
-	};
-
-	finder = {
-	  AppleShowAllExtensions = true;
-	  _FXShowPosixPathInTitle = true;
-	  FXEnableExtensionChangeWarning = false;
-	};
   };
 
   # Set Git commit hash for darwin-version.
