@@ -5,7 +5,11 @@
 { config, pkgs, ... }:
 
 {
-  imports = [];
+  imports = [
+  ../../modules/system/darwin/karabiner.nix
+  ../../modules/system/darwin/yabai.nix
+  ../../modules/system/darwin/skhd.nix
+  ];
 
   environment.systemPackages = with pkgs; [
     vim
@@ -13,13 +17,26 @@
     git
   ];
 
-  environment.pathsToLink = [ "/share/bash-completion" ];
+  environment.shells = with pkgs; [
+    bash
+    zsh
+  ];
+  users.users.fom.shell = pkgs.bash;
+
+  environment.variables = {
+    EDITOR = "vim";
+  };
+  #environment.pathsToLink = [ "/share/bash-completion" ];
 
   # Necessary for using flakes on this system.
   nix.settings.experimental-features = "nix-command flakes";
   nix.settings.extra-platforms = "x86_64-darwin";
 
   services.nix-daemon.enable = true;
+  nix.settings.allowed-users = [
+    "@admin"
+    "fom"
+  ];
 
   # Create /etc/zshrc that loads the nix-darwin environment.
   programs.zsh = {

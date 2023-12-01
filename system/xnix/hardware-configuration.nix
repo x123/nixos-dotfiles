@@ -8,10 +8,20 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
+  # bootloader
+  boot.loader = {
+    systemd-boot.enable = true;
+    systemd-boot.configurationLimit = 100;
+    efi.canTouchEfiVariables = true;
+  };
+
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" "usb_storage" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelPackages = pkgs.linuxPackages_zen;
+  boot.kernelModules = [ "it87" "k10temp" "nct6683" "kvm-amd" ];
   boot.extraModulePackages = [ ];
+
+  services.fstrim.enable = true;
 
   fileSystems."/" = {
     device = "/dev/disk/by-label/NIXROOT";

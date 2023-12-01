@@ -8,8 +8,6 @@
       htop
       pciutils
       ripgrep
-      tmux
-      whois
 
       # net
       aria2

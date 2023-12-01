@@ -14,16 +14,15 @@
     ../../modules/user/tor-browser.nix
     ../../modules/user/video.nix
     ../../modules/user/vim.nix
+    ../../modules/user/i3-config.nix
   ];
 
-  nixpkgs.config.allowUnfree = true;
-
-  home.username = "x";
-  home.homeDirectory = "/home/x";
-  home.sessionVariables = {
-    #EDITOR = "vim";
+  home = {
+    username = "x";
+    homeDirectory = "/home/x";
+    stateVersion = "23.05";
   };
-  home.stateVersion = "23.05"; # dont change
+  nixpkgs.config.allowUnfree = true;
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

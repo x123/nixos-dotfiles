@@ -1,6 +1,35 @@
 {pkgs, ...}: {
   imports = [];
 
+  home = {
+    packages = with pkgs; [
+      # term/shell
+      file
+      htop
+      pciutils
+      ripgrep
+    ];
+
+    shellAliases = {
+      adamantium = "ssh adamantium";
+      boxchop = "ssh adamantium";
+    };
+  };
+
+  programs.tmux = {
+    enable = true;
+    historyLimit = 100000;
+    mouse = true;
+    keyMode = "vi";
+    clock24 = true;
+    shortcut = "a";
+  };
+
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+  };
+
   programs.bash = {
     enable = true;
     enableCompletion = true;
@@ -12,10 +41,6 @@
      }
      starship_precmd_user_func="set_win_title"
     '';
-    shellAliases = {
-      adamantium = "ssh adamantium";
-      boxchop = "ssh adamantium";
-    };
   };
 
   programs.starship.enable = true;

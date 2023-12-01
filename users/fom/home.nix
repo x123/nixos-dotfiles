@@ -15,6 +15,9 @@
     username = "fom";
     homeDirectory = "/Users/fom";
     stateVersion = "23.05";
+    sessionVariables = {
+      TESTINGVAR = "testing";
+    };
   };
 
   programs.home-manager.enable = true;

@@ -8,7 +8,6 @@
       htop
       pciutils
       ripgrep
-      tmux
       usbutils
       whois
 
@@ -19,7 +18,7 @@
       git
       git-crypt
       jq
-      rocgdb # for strings
+	  rocmPackages.rocgdb
       yq
 
       # crypto
