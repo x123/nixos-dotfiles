@@ -1,48 +1,6 @@
 {pkgs, ...}: {
   imports = [];
 
-  home = {
-    packages = with pkgs; [
-      # term/shell
-      file
-      htop
-      pciutils
-      ripgrep
-    ];
-
-    shellAliases = {
-      adamantium = "ssh adamantium";
-      boxchop = "ssh adamantium";
-    };
-  };
-
-  programs.tmux = {
-    enable = true;
-    historyLimit = 100000;
-    mouse = true;
-    keyMode = "vi";
-    clock24 = true;
-    shortcut = "a";
-  };
-
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-  };
-
-  programs.bash = {
-    enable = true;
-    enableCompletion = true;
-    bashrcExtra = ''
-      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
-    '' + ''
-     function set_win_title(){
-       echo -ne "\033]0; $(basename "$PWD") \007"
-     }
-     starship_precmd_user_func="set_win_title"
-    '';
-  };
-
   programs.starship.enable = true;
   programs.starship.enableZshIntegration = true;
   programs.starship.enableBashIntegration = true;
