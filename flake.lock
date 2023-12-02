@@ -1,5 +1,27 @@
 {
   "nodes": {
+    "blender-bin": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "dir": "blender",
+        "lastModified": 1700742564,
+        "narHash": "sha256-fkVV9AwGhyuoUy+nkiOg4fnuD9pb+t7bgdPbA38qDKM=",
+        "owner": "edolstra",
+        "repo": "nix-warez",
+        "rev": "981a6b645f4e7427071c51b6b531a7317fc7a6c6",
+        "type": "github"
+      },
+      "original": {
+        "dir": "blender",
+        "owner": "edolstra",
+        "repo": "nix-warez",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -113,11 +135,11 @@
     },
     "nur": {
       "locked": {
-        "lastModified": 1701528264,
-        "narHash": "sha256-h+U4YBiEBGohPe0//JQhhyRCMs+r1cwRuPY8gjPB/Tk=",
+        "lastModified": 1701539058,
+        "narHash": "sha256-bglFiIJINFuEJeOI09fPxdyp/ATToIEHM0wfBD/RHwc=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "e14b77401d63ba75aa9523f7ad9d327ee5085479",
+        "rev": "364e6d42c4fc455136d90aebd28f0d36b2ed06fc",
         "type": "github"
       },
       "original": {
@@ -128,6 +150,7 @@
     },
     "root": {
       "inputs": {
+        "blender-bin": "blender-bin",
         "home-manager": "home-manager",
         "nix-darwin": "nix-darwin",
         "nixos-wsl": "nixos-wsl",
