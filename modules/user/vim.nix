@@ -3,6 +3,12 @@
 
   programs.vim = {
     enable = true;
+    plugins = with pkgs.vimPlugins; [
+      vim-airline
+      vim-airline-themes
+      vim-lastplace
+      vim-nix
+    ];
     defaultEditor = true;
     settings = {
       number = true;
@@ -17,6 +23,7 @@
       filetype plugin indent on
       set cursorline
       set showmatch
+      let g:airline_theme='base16_nord'
     '';
   };
 

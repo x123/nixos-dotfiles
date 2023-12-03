@@ -1,8 +1,25 @@
 {pkgs, ...}: {
   imports = [
+    ./fonts.nix
     ./tmux.nix
     ./starship.nix
   ];
+
+  programs.dircolors = {
+    enable = true;
+    enableBashIntegration = true;
+    enableZshIntegration = true;
+    settings = {
+    };
+    extraConfig = builtins.readFile (
+      pkgs.fetchFromGitHub {
+        owner = "nordtheme";
+        repo = "dircolors";
+        rev = "2f5b939274d6a8e99a5c94fac0e57a100dc323c7";
+        sha256 = "2t+ETXqqidEqs0uvR/MNZlMqVJErEiBGADVujDplvpU=";
+      } + "/src/dir_colors"
+    );
+  };
 
   home = {
     packages = with pkgs; [
@@ -16,6 +33,7 @@
     shellAliases = {
       adamantium = "ssh adamantium";
       boxchop = "ssh adamantium";
+      ls = "ls --color";
     };
   };
 
