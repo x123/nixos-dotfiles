@@ -12,6 +12,7 @@
   home = {
     packages = [
       pkgs.realesrgan-ncnn-vulkan
+      #(pkgs.python311.withPackages(ps: with ps; [ jax ]))
       inputs.nixified-ai.packages.x86_64-linux.invokeai-nvidia
     ];
   };
